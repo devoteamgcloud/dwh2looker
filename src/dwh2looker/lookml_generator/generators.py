@@ -1,15 +1,16 @@
 from typing import Optional
 
+from jinja2 import Environment
+
 from dwh2looker.db_client import db_client as db
 from dwh2looker.lookml_generator.models import (
     Dimension,
     DimensionGroup,
     Explore,
     Join,
-    SligroRefinedView,
+    RefinedView,
     View,
 )
-from jinja2 import Environment
 
 FIELD_TYPE_MAPPING = {
     "bigquery": {
@@ -343,7 +344,7 @@ class JoinGenerator:
         return template.render(join.model_dump())
 
 
-class SligroRefinedViewGenerator:
+class RefinedViewGenerator:
     def __init__(self, jinja_env: Environment):
         self.jinja_env = jinja_env
 
@@ -352,12 +353,12 @@ class SligroRefinedViewGenerator:
         include: str,
         views: list[View],
     ):
-        return SligroRefinedView(
+        return RefinedView(
             include=include,
             views=views,
         )
 
-    def render(self, refined_view: SligroRefinedView):
+    def render(self, refined_view: RefinedView):
         template = self.jinja_env.get_template("refined_view.j2")
         return template.render(refined_view.model_dump())
 

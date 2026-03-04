@@ -2,6 +2,8 @@ import datetime
 import os
 from copy import deepcopy
 
+from jinja2 import Environment, FileSystemLoader
+
 from dwh2looker.db_client import db_client as db
 from dwh2looker.logger import Logger
 from dwh2looker.lookml_generator.config import DEFAULT_TIMEFRAMES, Config
@@ -12,13 +14,12 @@ from dwh2looker.lookml_generator.generators import (
     JoinGenerator,
     LookMLFileGenerator,
     NestedFieldHelper,
-    SligroRefinedViewGenerator,
+    RefinedViewGenerator,
     ViewGenerator,
 )
 from dwh2looker.lookml_generator.models import View
 from dwh2looker.lookml_generator.writer import LookMLFileWriter
 from dwh2looker.vc_client.vc_client import GithubClient
-from jinja2 import Environment, FileSystemLoader
 
 CONSOLE_LOGGER = Logger().get_logger()
 
@@ -85,7 +86,7 @@ class LookMLGenerator:
         self.view_generator = ViewGenerator(self.jinja_env)
         self.join_generator = JoinGenerator(self.jinja_env)
         self.explore_generator = ExploreGenerator(self.jinja_env)
-        self.sligro_refined_view_generator = SligroRefinedViewGenerator(
+        self.refined_view_generator = RefinedViewGenerator(
             jinja_env=self.jinja_env,
         )
         self.file_writer = LookMLFileWriter()
@@ -268,11 +269,11 @@ class LookMLGenerator:
         return self.explore_generator.render(explore)
 
     def process_refined_views(self, view_name: str, views: list[View]):
-        refined_view = self.sligro_refined_view_generator.create_refined_view(
+        refined_view = self.refined_view_generator.create_refined_view(
             include=f"/{self.looker_repo_structure.get('base_views').replace('env', f'{self.env}')}{view_name}.view.lkml",
             views=views,
         )
-        return self.sligro_refined_view_generator.render(refined_view)
+        return self.refined_view_generator.render(refined_view)
 
     def generate_lookml(
         self,

@@ -1,6 +1,7 @@
 from unittest.mock import Mock, mock_open, patch
 
 import pytest
+
 from dwh2looker.db_client.db_client import Field
 from dwh2looker.lookml_generator.generators import (
     DimensionGenerator,
@@ -252,9 +253,9 @@ def test_create_explore(jinja_env):
 
 
 def test_create_refined_view(jinja_env):
-    from dwh2looker.lookml_generator.generators import SligroRefinedViewGenerator
+    from dwh2looker.lookml_generator.generators import RefinedViewGenerator
 
-    refined_view_generator = SligroRefinedViewGenerator(jinja_env=jinja_env)
+    refined_view_generator = RefinedViewGenerator(jinja_env=jinja_env)
     view1 = View(
         name="view1", sql_table_name="table1", fields=[], full_view_path="view1"
     )
