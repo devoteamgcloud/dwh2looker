@@ -1,0 +1,48 @@
+{
+  "primary_key_prefixes": [
+    "pk_",
+    "sk_"
+  ],
+  "time_suffixes": [
+    "_ts",
+    "_date"
+  ],
+  "ignore_column_types": [],
+  "ignore_modes": [
+    "REPEATED"
+  ],
+  "timeframes": [
+    "time",
+    "date",
+    "week",
+    "month",
+    "quarter",
+    "year"
+  ],
+  "dimension_groups_excluded": [],
+  "capitalize_ids": false,
+  "tables_env": [
+    {
+      "env": "dev",
+      "project_id": "your-gcp-project-id",
+      "dataset_id": "your_bigquery_dataset_dev",
+      "service_account": "/path/to/your/service-account.json",
+      "create_refined_views": true
+    },
+    {
+      "env": "prod",
+      "project_id": "your-gcp-project-id",
+      "dataset_id": "your_bigquery_dataset_prod",
+      "credentials_json_env_var": "GCP_PROD_CREDENTIALS_JSON",
+      "create_refined_views": true
+    }
+  ],
+  "looker_repo_structure": {
+    "repo_url": "your-github-org/your-looker-repo",
+    "github_user_email": "your-email@example.com",
+    "main_branch": "main",
+    "branch_name": "dwh2looker-update",
+    "base_views": "views/env/",
+    "refined_views": "views/refined/"
+  }
+}

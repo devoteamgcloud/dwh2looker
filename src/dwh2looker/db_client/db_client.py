@@ -116,9 +116,11 @@ class BQClient:
             )
             field = Field(
                 name=schema_field.name,
-                internal_type=schema_field.field_type
-                if not parent_field_type == "ARRAY"
-                else schema_field.internal_type,
+                internal_type=(
+                    schema_field.field_type
+                    if not parent_field_type == "ARRAY"
+                    else schema_field.internal_type
+                ),
                 mode=schema_field.mode,
                 description=schema_field.description,
                 parent_field_name=parent_field_path,
@@ -141,20 +143,22 @@ class BQClient:
                     current_parent_field_type = "ARRAY"
 
                 self._process_schema_fields(
-                    schema_field.fields
-                    if hasattr(schema_field, "fields")
-                    and schema_field.fields
-                    and not field.is_array_field
-                    else [
-                        Field(
-                            name=field.name,
-                            internal_type=field.internal_type,
-                            mode="NULLABLE",
-                            description=f"Elements of the array field: {field.name}",
-                            parent_field_name=parent_field_path,
-                            parent_field_type=parent_field_type,
-                        )
-                    ],
+                    (
+                        schema_field.fields
+                        if hasattr(schema_field, "fields")
+                        and schema_field.fields
+                        and not field.is_array_field
+                        else [
+                            Field(
+                                name=field.name,
+                                internal_type=field.internal_type,
+                                mode="NULLABLE",
+                                description=f"Elements of the array field: {field.name}",
+                                parent_field_name=parent_field_path,
+                                parent_field_type=parent_field_type,
+                            )
+                        ]
+                    ),
                     table,
                     f"{target_dict_path}.{field.name}",
                     parent_field_path=field_full_path,

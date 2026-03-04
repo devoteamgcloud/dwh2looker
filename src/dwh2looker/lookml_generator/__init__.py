@@ -1,1 +1,3 @@
-from .lookml_generator import *
+from .lookml_generator import LookMLGenerator
+
+__all__ = ["LookMLGenerator"]

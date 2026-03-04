@@ -1,6 +1,8 @@
 # dwh2looker
 dwh2looker automatically generates your LookML views from your database models.
 
+> **Note:** Currently, `dwh2looker` is optimized for **Google BigQuery**. Support for other data warehouses is under consideration for future releases.
+
 dwh2looker has 3 features:
 - LookML generator: this is the main feature, that reads the table schemas from database and creates the LookML base views
 - [Optional] Track differences of models between tables in two distinct schemas in the same database, which are meant to correspond to your development and production schemas, in order to identify which models need to be synced.
@@ -19,11 +21,28 @@ Please specify which database (or databases) you will be using, as in the exampl
 pip install "dwh2looker[bigquery]"
 ```
 
-## Setup
-1. Create the dwh2looker configuration file `.dwh2looker/config.json` (you can name it another way) somewhere in your computer (we suggest inside the dbt or Looker repo)
-2. Create the environment variable `dwh2looker_CONFIG_FILE` which will be the absolute path to the file created in 1
-3. You need to be able to connect to your database. For BigQuery, you can connect either by Oauth or Service Account.
-4. [Optional] Create an environment variable `GH_TOKEN` for your GitHub personal token. You need to create this token in [GitHub](https://github.com/settings/tokens) with read:project, repo, user:email permissions. This will allow you to commit your Looker views directly to the Looker repository.
+## Configuration
+
+`dwh2looker` is configured through a central `config.json` file and environment variables.
+
+1.  **Create your configuration file.**
+    Start by copying the provided example file:
+    ```bash
+    cp config.example.json config.json
+    ```
+    Then, edit `config.json` to match your project's settings (database connections, Looker repo details, etc.).
+
+2.  **Set up your environment.**
+    The application needs to know where your configuration file is located.
+    - For local development, copy the `.env.example` file to `.env`:
+      ```bash
+      cp .env.example .env
+      ```
+    - Then, update `.env` to ensure `dwh2looker_CONFIG_FILE` points to your `config.json`. The `dwh2looker` application will automatically load this file.
+    - For production or CI/CD environments, set the `dwh2looker_CONFIG_FILE` environment variable directly.
+
+3.  **Authentication.**
+    Ensure you are authenticated with your data warehouse. For Google BigQuery, you can connect via OAuth (by running `gcloud auth application-default login`) or by providing a service account in your `config.json`.
 
 ### Config file
 

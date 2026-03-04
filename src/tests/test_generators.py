@@ -58,7 +58,7 @@ def test_create_dimension(jinja_env, nested_field_helper):
     assert dimension.type == "string"
     assert dimension.sql == "${TABLE}.test_field"
     assert dimension.description == "A test field"
-    assert dimension.is_nested == False
+    assert dimension.is_nested is False
     assert dimension.group_label is None
     assert dimension.group_item_label is None
 
@@ -100,7 +100,7 @@ def test_create_dimension(jinja_env, nested_field_helper):
     assert dimension.sql == "${TABLE}.parent.nested_field"
     assert dimension.group_label == "Parent"
     assert dimension.group_item_label == "Parent  Nested Field"
-    assert dimension.is_nested == False
+    assert dimension.is_nested is False
 
     # Test with a deeply nested field
     field.name = "grandchild_field"
@@ -114,7 +114,7 @@ def test_create_dimension(jinja_env, nested_field_helper):
     assert dimension.sql == "${TABLE}.parent.child.grandchild_field"
     assert dimension.group_label == "Parent Child"
     assert dimension.group_item_label == "Parent  Child  Grandchild Field"
-    assert dimension.is_nested == False
+    assert dimension.is_nested is False
 
 
 def test_create_dimension_group(jinja_env, nested_field_helper):

@@ -95,7 +95,7 @@ def test_process_views(mock_config):
 def test_process_joins(mock_config):
     generator = LookMLGenerator(db_type="bigquery")
 
-    view1 = View(
+    View(
         name="base_view",
         sql_table_name="sql_base",
         fields=[],

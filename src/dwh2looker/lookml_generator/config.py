@@ -1,5 +1,6 @@
 import json
 import os
+from dotenv import load_dotenv
 
 DEFAULT_TIMEFRAMES = [
     "raw",
@@ -17,6 +18,7 @@ DEFAULT_TIMEFRAMES = [
 
 class Config:
     def __init__(self, config_file_path=None):
+        load_dotenv()
         self._config_file_path = config_file_path
         self._custom_config = self._read_custom_config()
 

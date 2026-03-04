@@ -8,7 +8,7 @@ from dwh2looker.db_client.db_client import BQClient, DbClient, Field, Table
 def test_bq_client_authentication_service_account(mock_import_module):
     mock_bigquery = Mock()
     mock_import_module.return_value = mock_bigquery
-    client = BQClient(project_id="test-project", service_account="test-account.json")
+    BQClient(project_id="test-project", service_account="test-account.json")
     mock_bigquery.Client.from_service_account_json.assert_called_with(
         "test-account.json", project="test-project"
     )
@@ -18,13 +18,13 @@ def test_bq_client_authentication_service_account(mock_import_module):
 def test_bq_client_authentication_oauth(mock_import_module):
     mock_bigquery = Mock()
     mock_import_module.return_value = mock_bigquery
-    client = BQClient(project_id="test-project")
+    BQClient(project_id="test-project")
     mock_bigquery.Client.assert_called_with(project="test-project")
 
 
 def test_db_client_factory():
     with patch("dwh2looker.db_client.db_client.BQClient") as mock_bq_client:
-        client = DbClient(
+        DbClient(
             db_type="bigquery", credentials={"project_id": "test-project"}
         )
         mock_bq_client.assert_called_with(
