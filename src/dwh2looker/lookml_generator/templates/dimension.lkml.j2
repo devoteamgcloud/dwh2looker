@@ -1,0 +1,28 @@
+dimension: {{ name }} {
+  description: "{{ description }}"
+  {% if pk %}
+  primary_key: {{ pk }}
+  {% endif %}
+  {% if hidden or is_nested %}
+  hidden: {{ hidden }}
+  {% endif %}
+  {% if not hide_type %}
+  type: {{ type }}
+  {% endif %}
+  sql: {{ sql }} ;;
+  {% if group_label %}
+  group_label: "{{ group_label }}"
+  {% endif %}
+  {% if convert_tz %}
+  convert_tz: {{ convert_tz }}
+  {% endif %}
+  {% if datatype %}
+  datatype: {{ datatype }}
+  {% endif %}
+  {% if full_suggestions %}
+  full_suggestions: {{ full_suggestions }}
+  {% endif %}
+  {% if tags %}
+  tags: ["{{ tags|join('", "') }}"]
+  {% endif %}
+}

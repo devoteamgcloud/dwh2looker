@@ -1,0 +1,8 @@
+join: {{ name }} {
+  #LAMS exempt: E2 {why: "Join of nested field. No primary key required"}
+  {% if view_label %}
+  view_label: "{{ view_label }}"
+  {% endif %}
+  sql: {{ sql }} ;;
+  relationship: {{ relationship }}
+}

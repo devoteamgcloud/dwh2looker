@@ -1,0 +1,9 @@
+view: {%if full_view_path %}{{ full_view_path | replace(".", "__") }}{% else %}{{ name }}{% endif %} {
+  {% if sql_table_name %}
+  sql_table_name: `{{ sql_table_name }}`;;
+  {% endif %}
+
+  {% for field in fields %}
+  {{ field | indent(2) }}{{'\n'}}
+  {% endfor %}
+}

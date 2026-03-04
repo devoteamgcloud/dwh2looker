@@ -1,0 +1,15 @@
+explore: {{ name }} {
+  {% if view_label %}
+  view_label: "{{ view_label }}"
+  {% endif %}
+  {% if hidden %}
+  hidden: {{ hidden }}
+  {% endif %}
+  {% if extension %}
+  extension: {{ extension }}
+  {% endif %}
+
+  {% for join in joins %}
+  {{ join | indent(2) }}{{'\n'}}
+  {% endfor %}
+}

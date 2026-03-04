@@ -1,0 +1,21 @@
+dimension_group: {{ name }} {
+  description: "{{ description }}"
+  {% if hidden %}
+  hidden: {{ hidden }}
+  {% endif %}
+  type: time
+  sql: {{ sql }} ;;
+  {% if group_label %}
+  group_label: "{{ group_label }}"
+  {% endif %}
+  timeframes: [{{ timeframes | join(', ') }}]
+  {% if convert_tz %}
+  convert_tz: {{ convert_tz }}
+  {% endif %}
+  {% if datatype %}
+  datatype: {{ datatype }}
+  {% endif %}
+  {% if full_suggestions %}
+  full_suggestions: {{ full_suggestions }}
+  {% endif %}
+}
