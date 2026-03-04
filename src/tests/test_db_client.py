@@ -24,9 +24,7 @@ def test_bq_client_authentication_oauth(mock_import_module):
 
 def test_db_client_factory():
     with patch("dwh2looker.db_client.db_client.BQClient") as mock_bq_client:
-        DbClient(
-            db_type="bigquery", credentials={"project_id": "test-project"}
-        )
+        DbClient(db_type="bigquery", credentials={"project_id": "test-project"})
         mock_bq_client.assert_called_with(
             project_id="test-project",
             service_account=None,

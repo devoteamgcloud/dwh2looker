@@ -38,8 +38,12 @@ class LookMLGenerator:
         self.github_app = github_app
         self.config = Config(os.getenv("dwh2looker_CONFIG_FILE"))
         self.primary_key_prefixes = self.config.get_property("primary_key_prefixes", [])
-        self.foreign_key_prefixes = self.config.get_property("foreign_key_prefixes", ["fk_"])
-        self.business_key_prefixes = self.config.get_property("business_key_prefixes", ["bk_"])
+        self.foreign_key_prefixes = self.config.get_property(
+            "foreign_key_prefixes", ["fk_"]
+        )
+        self.business_key_prefixes = self.config.get_property(
+            "business_key_prefixes", ["bk_"]
+        )
         self.ignore_column_types = self.config.get_property("ignore_column_types", [])
         self.ignore_modes = self.config.get_property("ignore_modes", [])
         self.timeframes = self.config.get_property("timeframes", DEFAULT_TIMEFRAMES)
