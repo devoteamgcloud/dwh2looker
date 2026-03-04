@@ -1,4 +1,4 @@
-name: Optician CI
+name: dwh2looker CI
 
 on:
   pull_request:
