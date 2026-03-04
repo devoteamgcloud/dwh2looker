@@ -38,11 +38,14 @@ class LookMLGenerator:
         self.github_app = github_app
         self.config = Config(os.getenv("dwh2looker_CONFIG_FILE"))
         self.primary_key_prefixes = self.config.get_property("primary_key_prefixes", [])
+        self.foreign_key_prefixes = self.config.get_property("foreign_key_prefixes", ["fk_"])
+        self.business_key_prefixes = self.config.get_property("business_key_prefixes", ["bk_"])
         self.ignore_column_types = self.config.get_property("ignore_column_types", [])
         self.ignore_modes = self.config.get_property("ignore_modes", [])
         self.timeframes = self.config.get_property("timeframes", DEFAULT_TIMEFRAMES)
         self.time_suffixes = self.config.get_property("time_suffixes", [])
         self.capitalize_ids = self.config.get_property("capitalize_ids", False)
+        self.hide_foreign_keys = self.config.get_property("hide_foreign_keys", True)
         self.dimension_groups_excluded = self.config.get_property(
             "dimension_groups_excluded", []
         )
@@ -73,8 +76,11 @@ class LookMLGenerator:
             db_type=self.db_type,
             capitalize_ids=self.capitalize_ids,
             primary_key_prefixes=self.primary_key_prefixes,
+            foreign_key_prefixes=self.foreign_key_prefixes,
+            business_key_prefixes=self.business_key_prefixes,
             jinja_env=self.jinja_env,
             nested_field_helper=self.nested_field_helper,
+            hide_foreign_keys=self.hide_foreign_keys,
         )
         self.dimension_group_generator = DimensionGroupGenerator(
             timeframes=self.timeframes,
@@ -85,7 +91,12 @@ class LookMLGenerator:
         )
         self.view_generator = ViewGenerator(self.jinja_env)
         self.join_generator = JoinGenerator(self.jinja_env)
-        self.explore_generator = ExploreGenerator(self.jinja_env)
+        self.explore_generator = ExploreGenerator(
+            self.jinja_env,
+            explore_view_name_prefixes=self.config.get_property(
+                "explore_view_name_prefixes", ["dim_", "fct_"]
+            ),
+        )
         self.refined_view_generator = RefinedViewGenerator(
             jinja_env=self.jinja_env,
         )
@@ -125,7 +136,10 @@ class LookMLGenerator:
                 field.name.lower().startswith(pk_prefix.lower())
                 for pk_prefix in self.primary_key_prefixes
             )
-            and field.name.lower().startswith("fk_")
+            and any(
+                field.name.lower().startswith(fk_prefix.lower())
+                for fk_prefix in self.foreign_key_prefixes
+            )
         ]
         bk_fields = [
             field
@@ -134,8 +148,14 @@ class LookMLGenerator:
                 field.name.lower().startswith(pk_prefix.lower())
                 for pk_prefix in self.primary_key_prefixes
             )
-            and not field.name.lower().startswith("fk_")
-            and field.name.lower().startswith("bk_")
+            and not any(
+                field.name.lower().startswith(fk_prefix.lower())
+                for fk_prefix in self.foreign_key_prefixes
+            )
+            and any(
+                field.name.lower().startswith(bk_prefix.lower())
+                for bk_prefix in self.business_key_prefixes
+            )
         ]
         nested_fields = [
             field

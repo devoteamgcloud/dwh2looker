@@ -3,6 +3,17 @@
     "pk_",
     "sk_"
   ],
+  "foreign_key_prefixes": [
+    "fk_"
+  ],
+  "business_key_prefixes": [
+    "bk_"
+  ],
+  "explore_view_name_prefixes": [
+    "dim_",
+    "fct_"
+  ],
+  "hide_foreign_keys": true,
   "time_suffixes": [
     "_ts",
     "_date"
