@@ -110,7 +110,7 @@ Example `tables_env` configuration for Workload Identity in GitHub Actions:
     "env": "cprod",
     "dataset_id": "dataset_id",
     "project_id": "project_id",
-    "credentials_path": "./gcp_creds_cprod.json" 
+    "credentials_path": "./gcp_creds_cprod.json"
   },
   {
     "env": "prod",
@@ -163,7 +163,7 @@ Example `tables_env` configuration for Workload Identity in GitHub Actions:
       "env": "cprod",
       "dataset_id": "dataset_id",
       "project_id": "project_id",
-      "credentials_path": "./gcp_creds_cprod.json" 
+      "credentials_path": "./gcp_creds_cprod.json"
     },
     {
       "env": "prod",
@@ -238,6 +238,7 @@ This command created the LookML base views.
 - `--token` (type: str, required: False): GitHub Token.
 - `--github-app` (action: Boolean, default: False): Run as GitHub App (omit this flag if running with PAT).
 - `--push-lookml-to-looker` (action: Boolean, default: False): Push generated LookML to Looker via GitHub.
+- `--draft-pr` (action: Boolean, default: False): Create the Pull Request as a Draft.
 
 
 #### Examples

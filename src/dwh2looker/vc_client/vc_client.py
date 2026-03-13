@@ -172,7 +172,12 @@ class GithubClient:
             return
 
     def create_pull_request(
-        self, base_branch: str, target_branch: str, pr_title: str, pr_body: str
+        self,
+        base_branch: str,
+        target_branch: str,
+        pr_title: str,
+        pr_body: str,
+        draft: bool = False,
     ):
         # Create a pull request if it does not exist
         pulls = self.repo.get_pulls(state="open", sort="created", base=base_branch)
@@ -188,7 +193,7 @@ class GithubClient:
             body=pr_body,
             base=base_branch,
             head=f"{target_branch}",
-            draft=True,
+            draft=draft,
         )
         CONSOLE_LOGGER.info(f"Pull request created: {pull_request.html_url}")
 
