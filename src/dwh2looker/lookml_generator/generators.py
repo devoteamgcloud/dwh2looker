@@ -1,15 +1,16 @@
 from typing import Optional
 
+from jinja2 import Environment
+
 from dwh2looker.db_client import db_client as db
 from dwh2looker.lookml_generator.models import (
     Dimension,
     DimensionGroup,
     Explore,
     Join,
-    SligroRefinedView,
+    RefinedView,
     View,
 )
-from jinja2 import Environment
 
 FIELD_TYPE_MAPPING = {
     "bigquery": {
@@ -58,12 +59,18 @@ class DimensionGenerator:
         primary_key_prefixes: list,
         jinja_env: Environment,
         nested_field_helper: NestedFieldHelper,
+        hide_foreign_keys: bool = True,
+        foreign_key_prefixes: list = None,
+        business_key_prefixes: list = None,
     ):
         self.db_type = db_type
         self.capitalize_ids = capitalize_ids
         self.primary_key_prefixes = primary_key_prefixes
+        self.foreign_key_prefixes = foreign_key_prefixes or ["fk_"]
+        self.business_key_prefixes = business_key_prefixes or ["bk_"]
         self.jinja_env = jinja_env
         self.nested_field_helper = nested_field_helper
+        self.hide_foreign_keys = hide_foreign_keys
 
     def _get_looker_type(self, field: db.Field):
         # Default unknown types to string
@@ -112,8 +119,14 @@ class DimensionGenerator:
             if (
                 not (is_nested or is_array)
                 and field.parent_field_type not in ["ARRAY"]
-                and not field_name.lower().startswith("fk_")
-                and not field_name.lower().startswith("pk_")
+                and not any(
+                    field_name.lower().startswith(fk_prefix.lower())
+                    for fk_prefix in self.foreign_key_prefixes
+                )
+                and not any(
+                    field_name.lower().startswith(pk_prefix.lower())
+                    for pk_prefix in self.primary_key_prefixes
+                )
             ):
                 group_item_label = self.nested_field_helper.build_field_name(field_name)
                 group_label = self.nested_field_helper.build_field_name(
@@ -125,9 +138,16 @@ class DimensionGenerator:
         ):
             pk = "yes"
             hidden = "yes"
-        elif field_name.lower().startswith("fk_"):
-            hidden = "yes"
-        elif field_name.lower().startswith("bk_"):
+        elif any(
+            field_name.lower().startswith(fk_prefix.lower())
+            for fk_prefix in self.foreign_key_prefixes
+        ):
+            if self.hide_foreign_keys:
+                hidden = "yes"
+        elif any(
+            field_name.lower().startswith(bk_prefix.lower())
+            for bk_prefix in self.business_key_prefixes
+        ):
             hidden = "yes"
 
         if is_nested or is_array:
@@ -137,8 +157,14 @@ class DimensionGenerator:
         if (
             field.parent_field_type in ["RECORD_REPEATED", "ARRAY"]
             and not (is_nested or is_array)
-            and not field_name.lower().startswith("fk_")
-            and not field_name.lower().startswith("pk_")
+            and not any(
+                field_name.lower().startswith(fk_prefix.lower())
+                for fk_prefix in self.foreign_key_prefixes
+            )
+            and not any(
+                field_name.lower().startswith(pk_prefix.lower())
+                for pk_prefix in self.primary_key_prefixes
+            )
         ):
             full_suggestions = "yes"
 
@@ -275,15 +301,15 @@ class ViewGenerator:
 
 
 class ExploreGenerator:
-    def __init__(self, jinja_env: Environment):
+    def __init__(self, jinja_env: Environment, explore_view_name_prefixes: list = None):
         self.jinja_env = jinja_env
+        self.explore_view_name_prefixes = explore_view_name_prefixes or ["dim_", "fct_"]
 
     def get_view_label(self, view_name: str) -> str:
-        if view_name.startswith("dim_") or view_name.startswith("fct_"):
-            entity_name = (
-                view_name.replace("dim_", "").replace("fct_", "").split("__")[0]
-            )
-            return entity_name.title().replace("_", " ")
+        for prefix in self.explore_view_name_prefixes:
+            if view_name.startswith(prefix):
+                entity_name = view_name.replace(prefix, "").split("__")[0]
+                return entity_name.title().replace("_", " ")
         return view_name
 
     def create_explore(
@@ -343,7 +369,7 @@ class JoinGenerator:
         return template.render(join.model_dump())
 
 
-class SligroRefinedViewGenerator:
+class RefinedViewGenerator:
     def __init__(self, jinja_env: Environment):
         self.jinja_env = jinja_env
 
@@ -352,12 +378,12 @@ class SligroRefinedViewGenerator:
         include: str,
         views: list[View],
     ):
-        return SligroRefinedView(
+        return RefinedView(
             include=include,
             views=views,
         )
 
-    def render(self, refined_view: SligroRefinedView):
+    def render(self, refined_view: RefinedView):
         template = self.jinja_env.get_template("refined_view.j2")
         return template.render(refined_view.model_dump())
 

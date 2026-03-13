@@ -56,6 +56,6 @@ class Join(BaseModel):
     relationship: str = None
 
 
-class SligroRefinedView(BaseModel):
+class RefinedView(BaseModel):
     include: Optional[str] = None
     views: List[View]

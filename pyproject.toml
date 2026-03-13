@@ -5,14 +5,14 @@ name = "dwh2looker"
 version = "1.1.1"
 description = "Sync your data warehouse tables to Looker"
 authors = [
-    {name = "Y. Saleh", email = "ysaleh@sligro.nl"},
+    {name = "Yousef Salhamoud", email = "yousef.saleh@devoteam.com"},
 ]
-license = {text = "MIT"}
+license = {text = "GPL-3.0"}
 readme = "readme.md"
 requires-python = ">=3.9"
 keywords = ["dwh2looker", "looker", "sync", "lookml", "dbt", "data warehouse"]
 classifiers = [
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Topic :: Database",
@@ -34,12 +34,15 @@ bigquery = ["google-cloud-bigquery>=3.10.0"]
 redshift = ["psycopg2>=2.9.9"]
 postgres = ["psycopg2>=2.9.9"]
 snowflake = ["snowflake-connector-python>=3.8.1"]
-dev = ["pytest"]
+dev = ["pytest", "python-dotenv", "ruff", "pre-commit"]
 all = [
     "google-cloud-bigquery>=3.10.0",
     "psycopg2>=2.9.9",
     "snowflake-connector-python>=3.8.1",
     "pytest",
+    "python-dotenv",
+    "ruff",
+    "pre-commit",
 ]
 
 [project.scripts]

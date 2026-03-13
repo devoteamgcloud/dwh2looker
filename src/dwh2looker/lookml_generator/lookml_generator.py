@@ -2,6 +2,8 @@ import datetime
 import os
 from copy import deepcopy
 
+from jinja2 import Environment, FileSystemLoader
+
 from dwh2looker.db_client import db_client as db
 from dwh2looker.logger import Logger
 from dwh2looker.lookml_generator.config import DEFAULT_TIMEFRAMES, Config
@@ -12,13 +14,12 @@ from dwh2looker.lookml_generator.generators import (
     JoinGenerator,
     LookMLFileGenerator,
     NestedFieldHelper,
-    SligroRefinedViewGenerator,
+    RefinedViewGenerator,
     ViewGenerator,
 )
 from dwh2looker.lookml_generator.models import View
 from dwh2looker.lookml_generator.writer import LookMLFileWriter
 from dwh2looker.vc_client.vc_client import GithubClient
-from jinja2 import Environment, FileSystemLoader
 
 CONSOLE_LOGGER = Logger().get_logger()
 
@@ -37,11 +38,18 @@ class LookMLGenerator:
         self.github_app = github_app
         self.config = Config(os.getenv("dwh2looker_CONFIG_FILE"))
         self.primary_key_prefixes = self.config.get_property("primary_key_prefixes", [])
+        self.foreign_key_prefixes = self.config.get_property(
+            "foreign_key_prefixes", ["fk_"]
+        )
+        self.business_key_prefixes = self.config.get_property(
+            "business_key_prefixes", ["bk_"]
+        )
         self.ignore_column_types = self.config.get_property("ignore_column_types", [])
         self.ignore_modes = self.config.get_property("ignore_modes", [])
         self.timeframes = self.config.get_property("timeframes", DEFAULT_TIMEFRAMES)
         self.time_suffixes = self.config.get_property("time_suffixes", [])
         self.capitalize_ids = self.config.get_property("capitalize_ids", False)
+        self.hide_foreign_keys = self.config.get_property("hide_foreign_keys", True)
         self.dimension_groups_excluded = self.config.get_property(
             "dimension_groups_excluded", []
         )
@@ -72,8 +80,11 @@ class LookMLGenerator:
             db_type=self.db_type,
             capitalize_ids=self.capitalize_ids,
             primary_key_prefixes=self.primary_key_prefixes,
+            foreign_key_prefixes=self.foreign_key_prefixes,
+            business_key_prefixes=self.business_key_prefixes,
             jinja_env=self.jinja_env,
             nested_field_helper=self.nested_field_helper,
+            hide_foreign_keys=self.hide_foreign_keys,
         )
         self.dimension_group_generator = DimensionGroupGenerator(
             timeframes=self.timeframes,
@@ -84,8 +95,13 @@ class LookMLGenerator:
         )
         self.view_generator = ViewGenerator(self.jinja_env)
         self.join_generator = JoinGenerator(self.jinja_env)
-        self.explore_generator = ExploreGenerator(self.jinja_env)
-        self.sligro_refined_view_generator = SligroRefinedViewGenerator(
+        self.explore_generator = ExploreGenerator(
+            self.jinja_env,
+            explore_view_name_prefixes=self.config.get_property(
+                "explore_view_name_prefixes", ["dim_", "fct_"]
+            ),
+        )
+        self.refined_view_generator = RefinedViewGenerator(
             jinja_env=self.jinja_env,
         )
         self.file_writer = LookMLFileWriter()
@@ -124,7 +140,10 @@ class LookMLGenerator:
                 field.name.lower().startswith(pk_prefix.lower())
                 for pk_prefix in self.primary_key_prefixes
             )
-            and field.name.lower().startswith("fk_")
+            and any(
+                field.name.lower().startswith(fk_prefix.lower())
+                for fk_prefix in self.foreign_key_prefixes
+            )
         ]
         bk_fields = [
             field
@@ -133,8 +152,14 @@ class LookMLGenerator:
                 field.name.lower().startswith(pk_prefix.lower())
                 for pk_prefix in self.primary_key_prefixes
             )
-            and not field.name.lower().startswith("fk_")
-            and field.name.lower().startswith("bk_")
+            and not any(
+                field.name.lower().startswith(fk_prefix.lower())
+                for fk_prefix in self.foreign_key_prefixes
+            )
+            and any(
+                field.name.lower().startswith(bk_prefix.lower())
+                for bk_prefix in self.business_key_prefixes
+            )
         ]
         nested_fields = [
             field
@@ -268,11 +293,11 @@ class LookMLGenerator:
         return self.explore_generator.render(explore)
 
     def process_refined_views(self, view_name: str, views: list[View]):
-        refined_view = self.sligro_refined_view_generator.create_refined_view(
+        refined_view = self.refined_view_generator.create_refined_view(
             include=f"/{self.looker_repo_structure.get('base_views').replace('env', f'{self.env}')}{view_name}.view.lkml",
             views=views,
         )
-        return self.sligro_refined_view_generator.render(refined_view)
+        return self.refined_view_generator.render(refined_view)
 
     def generate_lookml(
         self,
@@ -389,10 +414,13 @@ class LookMLGenerator:
             self.dataset_id = table_env.get("dataset_id")
             self.project_id = table_env.get("project_id")
             self.env = table_env.get("env")
+            self.exclude_tables = table_env.get("exclude_tables", [])
 
             tables = self.client.get_table_names(dataset_id=self.dataset_id)
 
             for table in tables:
+                if table in self.exclude_tables:
+                    continue
                 self.generate_lookml(
                     table_id=table,
                     override_dataset_id=override_dataset_id,

@@ -12,15 +12,19 @@ def mock_config():
         mock_config_instance = Mock()
         MockConfig.return_value = mock_config_instance
         mock_config_instance.get_property.side_effect = [
-            ["pk_"],
-            [],
-            [],
-            ["time"],
-            [],
-            False,
-            [],
-            {},
-            {},
+            ["pk_"],  # primary_key_prefixes
+            ["fk_"],  # foreign_key_prefixes
+            ["bk_"],  # business_key_prefixes
+            [],  # ignore_column_types
+            [],  # ignore_modes
+            ["time"],  # timeframes
+            [],  # time_suffixes
+            False,  # capitalize_ids
+            True,  # hide_foreign_keys
+            [],  # dimension_groups_excluded
+            {},  # tables_env
+            {},  # looker_repo_structure
+            ["dim_", "fct_"],  # explore_view_name_prefixes
         ]
         yield mock_config_instance
 
@@ -28,7 +32,7 @@ def mock_config():
 def test_lookml_generator_init(mock_config):
     generator = LookMLGenerator(db_type="bigquery")
     assert generator.db_type == "bigquery"
-    assert mock_config.get_property.call_count == 9
+    assert mock_config.get_property.call_count == 13
 
 
 def test_sort_fields(mock_config):
@@ -95,7 +99,7 @@ def test_process_views(mock_config):
 def test_process_joins(mock_config):
     generator = LookMLGenerator(db_type="bigquery")
 
-    view1 = View(
+    View(
         name="base_view",
         sql_table_name="sql_base",
         fields=[],

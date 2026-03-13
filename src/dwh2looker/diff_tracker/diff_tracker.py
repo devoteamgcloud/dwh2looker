@@ -33,7 +33,7 @@ class DiffTracker:
         dataset1_schemas = self.get_table_schemas(self.dataset1_name)
 
         # If full refresh, return all tables in dataset1
-        if self.full_refresh == True:
+        if self.full_refresh:
             results["diff_models"] = list(dataset1_schemas.keys())
             return results
 
