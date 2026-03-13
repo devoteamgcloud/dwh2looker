@@ -110,7 +110,7 @@ Example `tables_env` configuration for Workload Identity in GitHub Actions:
     "env": "cprod",
     "dataset_id": "dataset_id",
     "project_id": "project_id",
-    "credentials_path": "./gcp_creds_cprod.json" 
+    "credentials_path": "./gcp_creds_cprod.json"
   },
   {
     "env": "prod",
@@ -163,7 +163,7 @@ Example `tables_env` configuration for Workload Identity in GitHub Actions:
       "env": "cprod",
       "dataset_id": "dataset_id",
       "project_id": "project_id",
-      "credentials_path": "./gcp_creds_cprod.json" 
+      "credentials_path": "./gcp_creds_cprod.json"
     },
     {
       "env": "prod",
