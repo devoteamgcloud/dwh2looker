@@ -261,3 +261,7 @@ dwh2looker generate_lookml \
 ## How to contribute
 
 We welcome contributions to dwh2looker! Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to set up your development environment, run tests, and submit pull requests.
+
+---
+
+dwh2looker was inspired by Optician
