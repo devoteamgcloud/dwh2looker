@@ -238,6 +238,7 @@ This command created the LookML base views.
 - `--token` (type: str, required: False): GitHub Token.
 - `--github-app` (action: Boolean, default: False): Run as GitHub App (omit this flag if running with PAT).
 - `--push-lookml-to-looker` (action: Boolean, default: False): Push generated LookML to Looker via GitHub.
+- `--draft-pr` (action: Boolean, default: False): Create the Pull Request as a Draft.
 
 
 #### Examples

@@ -77,6 +77,11 @@ def cli():
         action="store_true",
         help="Push generated LookML to Looker via GitHub",
     )
+    generate_lookml_parser.add_argument(
+        "--draft-pr",
+        action="store_true",
+        help="Create the Pull Request as a Draft",
+    )
 
     args = parser.parse_args()
     if args.command == "diff_tracker":
@@ -124,6 +129,7 @@ def cli():
             push_lookml_to_looker=args.push_lookml_to_looker,
             github_token=args.token,
             github_app=args.github_app,
+            draft_pr=args.draft_pr,
         )
         lookml.generate_batch_lookml_views(
             override_dataset_id=args.override_dataset_id,
