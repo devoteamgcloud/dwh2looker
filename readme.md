@@ -101,6 +101,7 @@ The config file allows you to customise your LookML views. It supports the follo
     - `dataset_id`: The dataset ID for that environment.
     - `project_id`: The project ID for that environment.
     - `credentials_path` (optional): The path to a GCP credentials file. This can be a service account key or a Workload Identity configuration file. If omitted, the application will use Application Default Credentials (ADC), which is suitable for local development with `gcloud` or environments like GitHub Actions where authentication is managed automatically.
+    - `exclude_tables` (optional): A list of table names to be excluded from generating LookML in this environment. E.g., `["table1", "table2"]`.
 
 Example `tables_env` configuration for Workload Identity in GitHub Actions:
 ```json

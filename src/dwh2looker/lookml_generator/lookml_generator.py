@@ -414,10 +414,13 @@ class LookMLGenerator:
             self.dataset_id = table_env.get("dataset_id")
             self.project_id = table_env.get("project_id")
             self.env = table_env.get("env")
+            self.exclude_tables = table_env.get("exclude_tables", [])
 
             tables = self.client.get_table_names(dataset_id=self.dataset_id)
 
             for table in tables:
+                if table in self.exclude_tables:
+                    continue
                 self.generate_lookml(
                     table_id=table,
                     override_dataset_id=override_dataset_id,

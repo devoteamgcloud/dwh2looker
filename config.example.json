@@ -38,7 +38,11 @@
       "project_id": "your-gcp-project-id",
       "dataset_id": "your_bigquery_dataset_dev",
       "service_account": "/path/to/your/service-account.json",
-      "create_refined_views": true
+      "create_refined_views": true,
+      "exclude_tables": [
+        "your_table_to_exclude_1",
+        "your_table_to_exclude_2"
+      ]
     },
     {
       "env": "prod",
