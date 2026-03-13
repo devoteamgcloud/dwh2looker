@@ -1,0 +1,66 @@
+name: Bug Report
+description: Create a report to help us improve dwh2looker
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of what the bug is.
+      placeholder: Tell us what you see!
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Run command '...'
+        2. With config '...'
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: dwh2looker version
+      description: What version of dwh2looker are you using?
+      placeholder: e.g. 1.1.1
+    validations:
+      required: true
+  - type: dropdown
+    id: database
+    attributes:
+      label: Database Type
+      description: Which data warehouse are you connecting to?
+      options:
+        - BigQuery
+        - Snowflake
+        - Redshift
+        - Postgres
+        - Other (please specify in description)
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output or stack traces. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Add any other context about the problem here (e.g., your config file structure, Looker repo details).

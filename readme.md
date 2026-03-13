@@ -259,8 +259,4 @@ dwh2looker generate_lookml \
 
 ## How to contribute
 
-We are only supporting BigQuery at the moment, but you are able to contribute by updating the `db_client.py` file.
-
-In order to contribute, fork this repository, develop on a new branch and then open a pull request.
-
-Make sure you install all dependencies into a virtual environment and also install pre-commit `pre-commit install` so that the code is linted when committing.
+We welcome contributions to dwh2looker! Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to set up your development environment, run tests, and submit pull requests.
