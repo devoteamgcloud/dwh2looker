@@ -10,7 +10,7 @@ dwh2looker has 3 features:
 
 Assumptions:
 - The fields in your tables have descriptions (supported by some databases only). If you use dbt, you can use `persist-docs` to store the fields descriptions in the database (see [dbt docs](https://docs.getdbt.com/reference/resource-configs/persist_docs)).
-- Your Looker project is structured with base, standard and logical layers, following [this approach](https://www.spectacles.dev/post/fix-your-lookml-project-structure). dwh2looker helps you create and update your base layer, without any measures.
+- Your Looker project is structured with base, standard and logical layers. dwh2looker helps you create and update your base layer, without any measures.
 
 ## Installation
 
