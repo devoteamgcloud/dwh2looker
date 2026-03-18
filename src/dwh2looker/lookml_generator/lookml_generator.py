@@ -238,8 +238,16 @@ class LookMLGenerator:
         for field in current_level_struct_fields:
             fields_to_process_for_view.append(field)
             if field.is_struct_field:
-                sub_fields = self.sort_fields(fields_in_schema[field].keys())
-                fields_to_process_for_view.extend(sub_fields)  # Add immediate children
+                structs_to_process = [field]
+                while structs_to_process:
+                    current_struct = structs_to_process.pop(0)
+                    sub_schema = fields_in_schema.get(current_struct, {})
+                    sub_fields = self.sort_fields(sub_schema.keys())
+                    for sub_field in sub_fields:
+                        fields_to_process_for_view.append(sub_field)
+                        fields_in_schema[sub_field] = sub_schema[sub_field]
+                        if sub_field.is_struct_field:
+                            structs_to_process.append(sub_field)
 
         processed_fields = []
         for field in fields_to_process_for_view:
