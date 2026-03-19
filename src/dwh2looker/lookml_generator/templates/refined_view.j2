@@ -1,0 +1,9 @@
+{% if include %}
+include: "{{ include }}"
+{% endif %}
+
+{% for view in views %}
+view: +{%if view.full_view_path %}{{ view.full_view_path | replace(".", "__") }}{% else %}{{ view.name }}{% endif %} {
+  
+}{{'\n'}}
+{% endfor %}
