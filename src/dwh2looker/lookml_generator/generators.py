@@ -110,7 +110,9 @@ class DimensionGenerator:
 
         if field.parent_field_name:
             if field.parent_field_type == "RECORD_NULLABLE":
-                field_sql_name = f"${{TABLE}}.{field.parent_field_name}.{original_field_name}"
+                field_sql_name = (
+                    f"${{TABLE}}.{field.parent_field_name}.{original_field_name}"
+                )
                 field_name = (
                     f"{field.parent_field_name.replace('.', '__')}__{field_name}"
                 )
@@ -121,11 +123,17 @@ class DimensionGenerator:
             if parent_view_path and "." in parent_view_path:
                 parts = parent_view_path.split(".")
                 array_path = ".".join(parts[1:])
-                
-                if field.parent_field_name and field.parent_field_name.startswith(array_path):
-                    relative_parent_path = field.parent_field_name[len(array_path):].lstrip(".")
+
+                if field.parent_field_name and field.parent_field_name.startswith(
+                    array_path
+                ):
+                    relative_parent_path = field.parent_field_name[
+                        len(array_path) :
+                    ].lstrip(".")
                     if relative_parent_path:
-                        field_sql_name = f"${{TABLE}}.{relative_parent_path}.{original_field_name}"
+                        field_sql_name = (
+                            f"${{TABLE}}.{relative_parent_path}.{original_field_name}"
+                        )
                     else:
                         field_sql_name = f"${{TABLE}}.{original_field_name}"
                 elif field.parent_field_name == array_path:
@@ -254,7 +262,9 @@ class DimensionGroupGenerator:
 
         if field.parent_field_name:
             if field.parent_field_type == "RECORD_NULLABLE":
-                field_sql_name = f"${{TABLE}}.{field.parent_field_name}.{original_field_name}"
+                field_sql_name = (
+                    f"${{TABLE}}.{field.parent_field_name}.{original_field_name}"
+                )
                 field_name = (
                     f"{field.parent_field_name.replace('.', '__')}__{field_name}"
                 )
@@ -263,11 +273,17 @@ class DimensionGroupGenerator:
             if parent_view_path and "." in parent_view_path:
                 parts = parent_view_path.split(".")
                 array_path = ".".join(parts[1:])
-                
-                if field.parent_field_name and field.parent_field_name.startswith(array_path):
-                    relative_parent_path = field.parent_field_name[len(array_path):].lstrip(".")
+
+                if field.parent_field_name and field.parent_field_name.startswith(
+                    array_path
+                ):
+                    relative_parent_path = field.parent_field_name[
+                        len(array_path) :
+                    ].lstrip(".")
                     if relative_parent_path:
-                        field_sql_name = f"${{TABLE}}.{relative_parent_path}.{original_field_name}"
+                        field_sql_name = (
+                            f"${{TABLE}}.{relative_parent_path}.{original_field_name}"
+                        )
                     else:
                         field_sql_name = f"${{TABLE}}.{original_field_name}"
                 elif field.parent_field_name == array_path:

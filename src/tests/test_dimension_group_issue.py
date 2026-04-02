@@ -1,7 +1,10 @@
-import pytest
 from unittest.mock import Mock
 from dwh2looker.db_client.db_client import Field
-from dwh2looker.lookml_generator.generators import DimensionGroupGenerator, NestedFieldHelper
+from dwh2looker.lookml_generator.generators import (
+    DimensionGroupGenerator,
+    NestedFieldHelper,
+)
+
 
 def test_create_dimension_group_in_nullable_record():
     """
@@ -11,7 +14,7 @@ def test_create_dimension_group_in_nullable_record():
     """
     nested_field_helper = NestedFieldHelper()
     jinja_env = Mock()
-    
+
     dimension_group_generator = DimensionGroupGenerator(
         timeframes=["time", "date", "week", "month"],
         time_suffixes=["_ts"],
@@ -30,10 +33,13 @@ def test_create_dimension_group_in_nullable_record():
     field.parent_field_type = "RECORD_NULLABLE"
 
     dimension_group = dimension_group_generator.create_dimension_group(field)
-    
+
     # EXPECTED: ${TABLE}.product.created_ts
     # ACTUAL (Current Bug): ${TABLE}.created_ts
-    assert dimension_group.sql == "${TABLE}.product.created_ts", f"Expected ${{TABLE}}.product.created_ts but got {dimension_group.sql}"
+    assert dimension_group.sql == "${TABLE}.product.created_ts", (
+        f"Expected ${{TABLE}}.product.created_ts but got {dimension_group.sql}"
+    )
+
 
 if __name__ == "__main__":
     try:
