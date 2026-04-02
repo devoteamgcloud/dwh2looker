@@ -182,7 +182,7 @@ class LookMLGenerator:
             + nested_fields
         )
 
-    def process_field(self, field: db.Field):
+    def process_field(self, field: db.Field, parent_view_path: str = None):
         field_mode = field.mode
         field_type = field.internal_type
 
@@ -199,12 +199,14 @@ class LookMLGenerator:
             ]
         ):
             dimension_group = self.dimension_group_generator.create_dimension_group(
-                field
+                field, parent_view_path=parent_view_path
             )
             yield self.dimension_group_generator.render(dimension_group)
 
         else:
-            dimension = self.dimension_generator.create_dimension(field)
+            dimension = self.dimension_generator.create_dimension(
+                field, parent_view_path=parent_view_path
+            )
             yield self.dimension_generator.render(dimension)
 
     def process_views(
@@ -252,7 +254,9 @@ class LookMLGenerator:
         processed_fields = []
         for field in fields_to_process_for_view:
             if not field.is_struct_field:
-                processed_field = self.process_field(field)
+                processed_field = self.process_field(
+                    field, parent_view_path=current_view_path
+                )
                 if processed_field:
                     processed_fields.extend(processed_field)
 
