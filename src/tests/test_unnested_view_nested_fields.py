@@ -2,23 +2,19 @@ from unittest.mock import Mock, patch
 from dwh2looker.lookml_generator.lookml_generator import LookMLGenerator
 from dwh2looker.db_client.db_client import Field, Table
 
-
 def test_nested_fields_in_unnested_view():
     """
     REPRODUCTION TEST CASE for deeply nested fields in unnested views.
     In an unnested view (e.g., order_items), the SQL for a nested field
     (e.g., item_meta.id) should be relative to ${TABLE} (the array element).
-    Current BUG: It includes the parent array name (e.g., ${TABLE}.order_items.item_meta.id).
     """
     # 1. Define fields
-    # order_items (ARRAY/RECORD_REPEATED)
     order_items_field = Field(
         name="order_items",
         internal_type="RECORD",
         mode="REPEATED",
         description="List of items",
     )
-    # item_meta (STRUCT/RECORD_NULLABLE inside order_items)
     item_meta_field = Field(
         name="item_meta",
         internal_type="RECORD",
@@ -27,7 +23,6 @@ def test_nested_fields_in_unnested_view():
         parent_field_name="order_items",
         parent_field_type="RECORD_REPEATED",
     )
-    # meta_trigger_id (STRING inside item_meta)
     meta_trigger_id_field = Field(
         name="meta_trigger_id",
         internal_type="STRING",
@@ -39,8 +34,6 @@ def test_nested_fields_in_unnested_view():
 
     # 2. Mock Table and Schema
     mock_table = Table(name="fact__interactions", internal_schema=[])
-    # The schema structure used by LookMLGenerator:
-    # { field_obj: { sub_field_obj: {} } }
     mock_table.schema = {
         order_items_field: {item_meta_field: {meta_trigger_id_field: {}}}
     }
@@ -49,7 +42,7 @@ def test_nested_fields_in_unnested_view():
     with patch("dwh2looker.lookml_generator.lookml_generator.Config") as MockConfig:
         mock_config = Mock()
         MockConfig.return_value = mock_config
-        mock_config.get_property.return_value = []  # Default for most properties
+        mock_config.get_property.return_value = []
 
         # Special case for timeframes and prefixes
         def get_prop(prop, default=None):
@@ -60,7 +53,6 @@ def test_nested_fields_in_unnested_view():
             return default
 
         mock_config.get_property.side_effect = get_prop
-
         generator = LookMLGenerator(db_type="bigquery")
 
         # 4. Process views
@@ -80,27 +72,10 @@ def test_nested_fields_in_unnested_view():
         )
         assert order_items_view_tuple is not None, "order_items view not generated"
 
-        rendered_content, view_obj = order_items_view_tuple
-        print(f"Generated View Name: {view_obj.name}")
-        print("Rendered content:")
-        print(rendered_content)
+        rendered_content, _ = order_items_view_tuple
 
         # FIND meta_trigger_id dimension
         # EXPECTED SQL: ${TABLE}.item_meta.meta_trigger_id
-        # ACTUAL (BUG): ${TABLE}.order_items.item_meta.meta_trigger_id
         assert "sql: ${TABLE}.item_meta.meta_trigger_id" in rendered_content, (
             f"Incorrect SQL for meta_trigger_id in unnested view. Content:\n{rendered_content}"
         )
-
-
-if __name__ == "__main__":
-    try:
-        test_nested_fields_in_unnested_view()
-        print("Test PASSED!")
-    except AssertionError as e:
-        print(f"Test FAILED: {e}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        import traceback
-
-        traceback.print_exc()

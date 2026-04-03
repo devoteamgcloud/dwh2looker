@@ -1,20 +1,25 @@
 from unittest.mock import Mock
+import pytest
 from dwh2looker.db_client.db_client import Field
 from dwh2looker.lookml_generator.generators import (
     DimensionGroupGenerator,
     NestedFieldHelper,
 )
 
+@pytest.fixture
+def jinja_env():
+    return Mock()
 
-def test_create_dimension_group_in_nullable_record():
+@pytest.fixture
+def nested_field_helper():
+    return NestedFieldHelper()
+
+def test_create_dimension_group_in_nullable_record(jinja_env, nested_field_helper):
     """
     REPRODUCTION TEST CASE:
     When a field is inside a nullable record (e.g., 'product.created'),
     the generated SQL should be '${TABLE}.product.created'.
     """
-    nested_field_helper = NestedFieldHelper()
-    jinja_env = Mock()
-
     dimension_group_generator = DimensionGroupGenerator(
         timeframes=["time", "date", "week", "month"],
         time_suffixes=["_ts"],
@@ -39,11 +44,3 @@ def test_create_dimension_group_in_nullable_record():
     assert dimension_group.sql == "${TABLE}.product.created_ts", (
         f"Expected ${{TABLE}}.product.created_ts but got {dimension_group.sql}"
     )
-
-
-if __name__ == "__main__":
-    try:
-        test_create_dimension_group_in_nullable_record()
-        print("Test passed!")
-    except AssertionError as e:
-        print(f"Test failed: {e}")
