@@ -76,13 +76,14 @@ class DimensionGenerator:
         # Default unknown types to string
         return FIELD_TYPE_MAPPING[self.db_type].get(field.internal_type, "string")
 
-    def create_dimension(self, field: db.Field):
+    def create_dimension(self, field: db.Field, parent_view_path: str = None):
+        original_field_name = field.name
         field_name = field.name
         is_array = field.is_array_field
         is_nested = field.is_nested_field
         field_description = field.description
         field_type = field.internal_type
-        field_sql_name = f"${{TABLE}}.{field.name}"
+        field_sql_name = f"${{TABLE}}.{original_field_name}"
         lookml_type = self._get_looker_type(field)
         pk = None
         convert_ts = None
@@ -109,12 +110,34 @@ class DimensionGenerator:
 
         if field.parent_field_name:
             if field.parent_field_type == "RECORD_NULLABLE":
-                field_sql_name = f"${{TABLE}}.{field.parent_field_name}.{field_name}"
+                field_sql_name = (
+                    f"${{TABLE}}.{field.parent_field_name}.{original_field_name}"
+                )
                 field_name = (
                     f"{field.parent_field_name.replace('.', '__')}__{field_name}"
                 )
             elif field.parent_field_type == "ARRAY":
                 field_sql_name = "${TABLE}"
+
+            # If we are in an unnested view, we need to make the SQL relative to ${TABLE}
+            if parent_view_path and "." in parent_view_path:
+                parts = parent_view_path.split(".")
+                array_path = ".".join(parts[1:])
+
+                if field.parent_field_name and field.parent_field_name.startswith(
+                    array_path
+                ):
+                    relative_parent_path = field.parent_field_name[
+                        len(array_path) :
+                    ].lstrip(".")
+                    if relative_parent_path:
+                        field_sql_name = (
+                            f"${{TABLE}}.{relative_parent_path}.{original_field_name}"
+                        )
+                    else:
+                        field_sql_name = f"${{TABLE}}.{original_field_name}"
+                elif field.parent_field_name == array_path:
+                    field_sql_name = f"${{TABLE}}.{original_field_name}"
 
             if (
                 not (is_nested or is_array)
@@ -211,9 +234,10 @@ class DimensionGroupGenerator:
         else:
             return self.timeframes
 
-    def create_dimension_group(self, field: db.Field):
+    def create_dimension_group(self, field: db.Field, parent_view_path: str = None):
+        original_field_name = field.name
         field_name = field.name
-        field_sql_name = f"${{TABLE}}.{field.name}"
+        field_sql_name = f"${{TABLE}}.{original_field_name}"
         field_type = field.internal_type
         field_description = field.description
         hidden = None
@@ -237,7 +261,34 @@ class DimensionGroupGenerator:
         )
 
         if field.parent_field_name:
-            field_sql_name = f"${{TABLE}}.{field.name}"
+            if field.parent_field_type == "RECORD_NULLABLE":
+                field_sql_name = (
+                    f"${{TABLE}}.{field.parent_field_name}.{original_field_name}"
+                )
+                field_name = (
+                    f"{field.parent_field_name.replace('.', '__')}__{field_name}"
+                )
+
+            # If we are in an unnested view, we need to make the SQL relative to ${TABLE}
+            if parent_view_path and "." in parent_view_path:
+                parts = parent_view_path.split(".")
+                array_path = ".".join(parts[1:])
+
+                if field.parent_field_name and field.parent_field_name.startswith(
+                    array_path
+                ):
+                    relative_parent_path = field.parent_field_name[
+                        len(array_path) :
+                    ].lstrip(".")
+                    if relative_parent_path:
+                        field_sql_name = (
+                            f"${{TABLE}}.{relative_parent_path}.{original_field_name}"
+                        )
+                    else:
+                        field_sql_name = f"${{TABLE}}.{original_field_name}"
+                elif field.parent_field_name == array_path:
+                    field_sql_name = f"${{TABLE}}.{original_field_name}"
+
             group_item_label = self.nested_field_helper.build_field_name(field.name)
             group_label = self.nested_field_helper.build_field_name(
                 field.parent_field_name
