@@ -2,6 +2,7 @@ from unittest.mock import Mock, patch
 from dwh2looker.lookml_generator.lookml_generator import LookMLGenerator
 from dwh2looker.db_client.db_client import Field, Table
 
+
 def test_nested_fields_in_unnested_view():
     """
     REPRODUCTION TEST CASE for deeply nested fields in unnested views.

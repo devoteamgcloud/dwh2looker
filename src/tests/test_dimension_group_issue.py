@@ -6,13 +6,16 @@ from dwh2looker.lookml_generator.generators import (
     NestedFieldHelper,
 )
 
+
 @pytest.fixture
 def jinja_env():
     return Mock()
 
+
 @pytest.fixture
 def nested_field_helper():
     return NestedFieldHelper()
+
 
 def test_create_dimension_group_in_nullable_record(jinja_env, nested_field_helper):
     """
