@@ -51,21 +51,44 @@ pytest
 
 If you add new features or fix bugs, please add corresponding tests.
 
-## Submitting a Pull Request (PR)
+## Pull Request Process
 
-1.  **Create a new branch** for your feature or bug fix:
+We use a fully automated release and versioning system. To facilitate this, we require all contributions to follow the **Conventional Commits** standard.
+
+### 1. Prepare Your Branch
+*   **Create a new branch** for your feature or bug fix:
     ```bash
     git checkout -b feature/my-new-feature
     ```
     *Use a descriptive name, like `fix/issue-number-bug-name` or `feature/new-database-support`.*
-2.  **Make your changes** and commit them with clear, concise commit messages.
-3.  **Ensure tests and linters pass** locally.
-4.  **Push your branch** to your fork on GitHub:
-    ```bash
-    git push origin feature/my-new-feature
-    ```
-5.  **Open a Pull Request** against the `main` branch of the upstream repository.
-6.  Fill out the PR template provided, describing your changes in detail.
+*   **Make your changes** and commit them with clear, concise messages.
+*   **Ensure tests and linters pass** locally by running `ruff check .` and `pytest`.
+
+### 2. Submit the Pull Request
+*   **Push your branch** to your fork on GitHub.
+*   **Open a Pull Request** against the `main` branch.
+*   **PR Title:** This is the most critical part. Because we use "Squash and Merge", your PR title becomes the final commit message in the project history and determines the next version number.
+
+#### PR Title Format
+`<type>: <description>`
+
+**Common Types:**
+* `feat:` A new feature (triggers a **Minor** release)
+* `fix:` A bug fix (triggers a **Patch** release)
+* `docs:` Documentation only changes
+* `chore:` Maintenance tasks, dependency updates, etc.
+
+**Examples:**
+* ❌ `Added a new login page`
+* ✅ `feat: add new login page`
+* ❌ `Fixed the crashing bug`
+* ✅ `fix: resolve crash on startup`
+
+*Note: If your PR contains multiple changes, name it after the most significant one (e.g., use `feat:` if it includes both a new feature and a fix).*
+
+### 3. Review and Merge
+*   Fill out the PR template provided, describing your changes in detail.
+*   Once approved and CI passes, a maintainer will merge your PR.
 
 ## Adding Support for New Databases
 
