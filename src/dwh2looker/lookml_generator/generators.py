@@ -131,13 +131,22 @@ class DimensionGenerator:
                         len(array_path) :
                     ].lstrip(".")
                     if relative_parent_path:
-                        field_sql_name = (
-                            f"${{TABLE}}.{relative_parent_path}.{original_field_name}"
-                        )
+                        if field.parent_field_type == "ARRAY":
+                            field_sql_name = "${TABLE}"
+                        else:
+                            field_sql_name = (
+                                f"${{TABLE}}.{relative_parent_path}.{original_field_name}"
+                            )
+                    else:
+                        if field.parent_field_type == "ARRAY":
+                            field_sql_name = "${TABLE}"
+                        else:
+                            field_sql_name = f"${{TABLE}}.{original_field_name}"
+                elif field.parent_field_name == array_path:
+                    if field.parent_field_type == "ARRAY":
+                        field_sql_name = "${TABLE}"
                     else:
                         field_sql_name = f"${{TABLE}}.{original_field_name}"
-                elif field.parent_field_name == array_path:
-                    field_sql_name = f"${{TABLE}}.{original_field_name}"
 
             if (
                 not (is_nested or is_array)
