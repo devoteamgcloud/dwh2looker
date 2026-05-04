@@ -17,7 +17,7 @@ def test_primitive_array_unnested_view_sql():
         mode="REPEATED",
         description="Audit log array",
     )
-    
+
     features_used_field = Field(
         name="features_used",
         internal_type="STRING",
@@ -34,18 +34,14 @@ def test_primitive_array_unnested_view_sql():
         mode="NULLABLE",
         description="Elements of the array field: features_used",
         parent_field_name="audit_log.features_used",
-        parent_field_type="ARRAY"
+        parent_field_type="ARRAY",
     )
 
     mock_table = Table(name="dim_demo_showcase", internal_schema=[])
-    
+
     # Simulating the deeply nested schema
     mock_table.schema = {
-        audit_log_field: {
-            features_used_field: {
-                features_used_element_field: {}
-            }
-        }
+        audit_log_field: {features_used_field: {features_used_element_field: {}}}
     }
 
     # 3. Setup LookMLGenerator
@@ -83,5 +79,7 @@ def test_primitive_array_unnested_view_sql():
         print(f"\nRendered content for features_used view:\n{rendered_content}")
 
         # The expected SQL for a primitive array element when unnested is ${TABLE}
-        assert "sql: ${TABLE} ;;" in rendered_content, f"Expected 'sql: ${{TABLE}} ;;' but got:\n{rendered_content}"
+        assert (
+            "sql: ${TABLE} ;;" in rendered_content
+        ), f"Expected 'sql: ${{TABLE}} ;;' but got:\n{rendered_content}"
         assert "sql: ${TABLE}.features_used ;;" not in rendered_content

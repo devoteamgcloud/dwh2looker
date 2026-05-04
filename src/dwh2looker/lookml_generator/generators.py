@@ -134,9 +134,7 @@ class DimensionGenerator:
                         if field.parent_field_type == "ARRAY":
                             field_sql_name = "${TABLE}"
                         else:
-                            field_sql_name = (
-                                f"${{TABLE}}.{relative_parent_path}.{original_field_name}"
-                            )
+                            field_sql_name = f"${{TABLE}}.{relative_parent_path}.{original_field_name}"
                     else:
                         if field.parent_field_type == "ARRAY":
                             field_sql_name = "${TABLE}"
