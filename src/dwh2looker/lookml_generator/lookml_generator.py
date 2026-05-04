@@ -368,7 +368,7 @@ class LookMLGenerator:
             if output_dir_info not in self.output_dirs:
                 self.output_dirs.append(output_dir_info)
 
-        output_dir_path = f"base_views_{self.env}"
+        output_dir_path = f"base_views_{self.env}" if self.env else "base_views"
         self.file_writer.write_lookml(
             content=lkml_view_output,
             file_name=view_name,
@@ -392,7 +392,7 @@ class LookMLGenerator:
 
             # get remote path from config
             remote_path = self.looker_repo_structure.get(str(view_type)).replace(
-                "env", env if env else "env"
+                "env", env if env is not None else "env"
             )
 
             self.github_client.update_files(
@@ -428,7 +428,7 @@ class LookMLGenerator:
             self.client = db.DbClient(db_type=self.db_type, credentials=credentials)
             self.dataset_id = table_env.get("dataset_id")
             self.project_id = table_env.get("project_id")
-            self.env = table_env.get("env")
+            self.env = table_env.get("env") if table_env.get("env") else ""
             self.exclude_tables = table_env.get("exclude_tables", [])
 
             tables = self.client.get_table_names(dataset_id=self.dataset_id)

@@ -34,13 +34,13 @@ bigquery = ["google-cloud-bigquery>=3.10.0"]
 redshift = ["psycopg2>=2.9.9"]
 postgres = ["psycopg2>=2.9.9"]
 snowflake = ["snowflake-connector-python>=3.8.1"]
-dev = ["pytest", "python-dotenv", "ruff", "pre-commit"]
+dev = ["pytest", "dotenv", "ruff", "pre-commit"]
 all = [
     "google-cloud-bigquery>=3.10.0",
     "psycopg2>=2.9.9",
     "snowflake-connector-python>=3.8.1",
     "pytest",
-    "python-dotenv",
+    "dotenv",
     "ruff",
     "pre-commit",
 ]
