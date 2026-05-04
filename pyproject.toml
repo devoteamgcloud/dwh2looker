@@ -2,7 +2,7 @@
 
 [project]
 name = "dwh2looker"
-version = "0.2.0"
+version = "0.2.1"
 description = "Sync your data warehouse tables to Looker"
 authors = [
     {name = "Yousef Salhamoud", email = "yousef.saleh@devoteam.com"},
