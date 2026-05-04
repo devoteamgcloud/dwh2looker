@@ -79,7 +79,7 @@ def test_primitive_array_unnested_view_sql():
         print(f"\nRendered content for features_used view:\n{rendered_content}")
 
         # The expected SQL for a primitive array element when unnested is ${TABLE}
-        assert (
-            "sql: ${TABLE} ;;" in rendered_content
-        ), f"Expected 'sql: ${{TABLE}} ;;' but got:\n{rendered_content}"
+        assert "sql: ${TABLE} ;;" in rendered_content, (
+            f"Expected 'sql: ${{TABLE}} ;;' but got:\n{rendered_content}"
+        )
         assert "sql: ${TABLE}.features_used ;;" not in rendered_content
